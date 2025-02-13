@@ -6,6 +6,14 @@ import { Stack } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
+const toTitleCase = (str: string) => {
+    return str
+        .toLowerCase()
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+};
+
 export default function DetailScreen() {
     const { id } = useLocalSearchParams();
     const listing = LISTING_SAMPLES.find((item) => item.id === Number(id));
@@ -17,7 +25,11 @@ export default function DetailScreen() {
         <ScrollView style={styles.container}>
             <Stack.Screen
                 options={{
-                    title: category?.en || "Details",
+                    title: toTitleCase(category?.en || "Details"),
+                    headerTitleStyle: {
+                        fontWeight: "semibold",
+                        fontSize: 24,
+                    },
                 }}
             />
             <View style={styles.imagesGrid}>
