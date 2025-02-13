@@ -1,8 +1,10 @@
 import { useLocalSearchParams } from "expo-router";
-import { View, Text, Image, StyleSheet, ScrollView, Dimensions } from "react-native";
+import { View, Text, Image, StyleSheet, ScrollView, Dimensions, Pressable } from "react-native";
 import { LISTING_SAMPLES } from "@/mock/listing_samples";
 import { BOOKING_CATEGORIES_PLACEHOLDER } from "@/mock/category_samples";
 import { Stack } from "expo-router";
+import { AntDesign } from '@expo/vector-icons';
+import { useFavorites } from "./hooks/useFavorites";
 
 const { width } = Dimensions.get("window");
 
@@ -18,6 +20,8 @@ export default function DetailScreen() {
     const { id } = useLocalSearchParams();
     const listing = LISTING_SAMPLES.find((item) => item.id === Number(id));
     const category = BOOKING_CATEGORIES_PLACEHOLDER.find((cat) => cat.id === listing?.category);
+    const { isFavorite, toggleFavorite, isLoading } = useFavorites();
+    const listingId = Number(id);
 
     if (!listing) return <Text>Listing not found</Text>;
 
@@ -30,6 +34,22 @@ export default function DetailScreen() {
                         fontWeight: "semibold",
                         fontSize: 24,
                     },
+                    headerRight: () => (
+                        <Pressable 
+                            onPress={() => toggleFavorite(listingId)}
+                            style={({ pressed }) => [
+                                styles.favoriteButton,
+                                pressed && { opacity: 0.7 }
+                            ]}
+                            disabled={isLoading}
+                        >
+                            <AntDesign 
+                                name={isFavorite(listingId) ? "heart" : "hearto"} 
+                                size={24} 
+                                color={isFavorite(listingId) ? "#ff4444" : "#000"} 
+                            />
+                        </Pressable>
+                    ),
                 }}
             />
             <View style={styles.imagesGrid}>
@@ -113,5 +133,9 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "100%",
         borderRadius: 10,
+    },
+    favoriteButton: {
+        padding: 8,
+        marginRight: 8,
     },
 });
